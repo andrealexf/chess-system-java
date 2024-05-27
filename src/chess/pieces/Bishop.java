@@ -17,4 +17,10 @@ public class Bishop extends ChessPiece{
 		return "B";
 	}
 
+	@Override
+	public boolean[][] possibleMoves() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
