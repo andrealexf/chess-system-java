@@ -1,6 +1,8 @@
 package chess;
 
 import boardgame.Board;
+
+import boardgame.Piece;
 import boardgame.Position;
 import chess.pieces.Bishop;
 import chess.pieces.King;
@@ -31,39 +33,70 @@ public class ChessMatch {
 		return mat;
 	}
 	
+	private void placeNewPiece(char column, int row, ChessPiece piece) {
+		
+		board.placePiece(piece, new ChessPosition(column,row).toPosition());
+	}
+	
+	public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
+		
+		Position source = sourcePosition.toPosition();
+		Position target = targetPosition.toPosition();
+		validateSourcePosition(source);
+		
+		Piece capturedPiece = makeMove(source,target);
+		return (ChessPiece)capturedPiece;//downcasting to chessPiece (it was piece)
+	}
+	
+	private void validateSourcePosition(Position position) {
+		if(!board.thereIsAPiece(position)) {
+			
+			throw new ChessException("Position not on the board");
+		}
+	}
+	
+	private Piece makeMove(Position source, Position target) {
+		
+		Piece p = board.removePiece(source);
+		Piece capturedPiece = board.removePiece(target);
+		board.placePiece(p, target);
+		
+		return capturedPiece;
+	}
+	
 	private void initialSetup() {
 		
 		//rooks
-		board.placePiece(new Rook(board,Color.WHITE), new Position(0,0));
-		board.placePiece(new Rook(board,Color.WHITE), new Position(0,7));
-		board.placePiece(new Rook(board,Color.BLACK), new Position(7,0));
-		board.placePiece(new Rook(board,Color.BLACK), new Position(7,7));
+		placeNewPiece('a',1, new Rook(board,Color.WHITE));
+		placeNewPiece('h',1, new Rook(board,Color.WHITE));
+		placeNewPiece('a',8, new Rook(board,Color.BLACK));
+		placeNewPiece('h',8, new Rook(board,Color.BLACK));
 		
 		//knights
-		board.placePiece(new Knight(board,Color.WHITE), new Position(0,1));
-		board.placePiece(new Knight(board,Color.WHITE), new Position(0,6));
-		board.placePiece(new Knight(board,Color.BLACK), new Position(7,1));
-		board.placePiece(new Knight(board,Color.BLACK), new Position(7,6));
+		placeNewPiece('b',1, new Knight(board,Color.WHITE));
+		placeNewPiece('g',1, new Knight(board,Color.WHITE));
+		placeNewPiece('b',8, new Knight(board,Color.BLACK));
+		placeNewPiece('g',8, new Knight(board,Color.BLACK));
 		
 		//bishops
-		board.placePiece(new Bishop(board,Color.WHITE), new Position(0,2));
-		board.placePiece(new Bishop(board,Color.WHITE), new Position(0,5));
-		board.placePiece(new Bishop(board,Color.BLACK), new Position(7,2));
-		board.placePiece(new Bishop(board,Color.BLACK), new Position(7,5));
+		placeNewPiece('c',1, new Bishop(board,Color.WHITE));
+		placeNewPiece('f',1, new Bishop(board,Color.WHITE));
+		placeNewPiece('c',8, new Bishop(board,Color.BLACK));
+		placeNewPiece('f',8, new Bishop(board,Color.BLACK));
 		
 		//queens
-		board.placePiece(new Queen(board,Color.WHITE), new Position(0,3));
-		board.placePiece(new Queen(board,Color.BLACK), new Position(7,3));
+		placeNewPiece('d',1, new Queen(board,Color.WHITE));
+		placeNewPiece('d',8, new Queen(board,Color.BLACK));
 		
 		//kings
-		board.placePiece(new King(board,Color.WHITE), new Position(0,4));
-		board.placePiece(new King(board,Color.BLACK), new Position(7,4));
+		placeNewPiece('e',1, new King(board,Color.WHITE));
+		placeNewPiece('e',8, new King(board,Color.BLACK));
 		
 		//pawns
 		for(int i=0; i<board.getColumns();i++) {
 			
-			board.placePiece(new Pawn(board,Color.WHITE), new Position(1,i));
-			board.placePiece(new Pawn(board,Color.BLACK), new Position(6,i));
+			board.placePiece(new Pawn(board,Color.WHITE), new Position(6,i));
+			board.placePiece(new Pawn(board,Color.BLACK), new Position(1,i));
 		}
 	}
 }
