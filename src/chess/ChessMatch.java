@@ -19,6 +19,7 @@ public class ChessMatch {
 	private Color currentPlayer;
 	private Board board;
 	private boolean check;//inicia com false
+	private boolean checkMate;
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();
 	private List<Piece> capturedPieces = new ArrayList<>();
@@ -28,6 +29,10 @@ public class ChessMatch {
 		turn = 1;
 		currentPlayer = Color.WHITE;
 		initialSetup();
+	}
+	
+	public boolean getCheckMate() {
+		return checkMate;
 	}
 	
 	public int getTurn() {
@@ -81,7 +86,13 @@ public class ChessMatch {
 		
 		check = (testCheck(opponent(currentPlayer)))? true : false;//se o opponente entrou em check, retorna verdadeiro, caso contrário, falso
 		
-		nextTurn();
+		if(testCheckMate(opponent(currentPlayer))) {//se o oponente da peça que mexeu, ficou em checkmate:
+			checkMate = true;
+			
+		} else {
+			nextTurn();
+		}
+		
 		return (ChessPiece)capturedPiece;//downcasting to chessPiece (it was piece)
 	}
 	
@@ -176,8 +187,47 @@ public class ChessMatch {
 		return false;
 	}
 	
+	private boolean testCheckMate(Color color) {
+		
+		if(!testCheck(color)) {
+			return false;
+		}
+		
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
+		for(Piece p: list) {
+			
+			boolean[][]mat = p.possibleMoves();
+			for(int i=0; i<board.getRows();i++) {
+				for(int j=0; j<board.getRows();j++) {
+					
+					if(mat[i][j]) {
+						Position source = ((ChessPiece)p).getChessPosition().toPosition();//downcasting -> getCHessPositin -> toPosition(só funciona no chessPiece)
+						Position target = new Position(i,j);
+						Piece capturedPiece = makeMove(source, target);
+						boolean testCheck = testCheck(color);//vai testar se o rei da minha cor está em check
+						undoMove(source,target,capturedPiece);
+						
+						if(!testCheck) {
+							return false; //se não está em check, retorna falso
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	private void initialSetup() {
 		
+		placeNewPiece('h',7, new Rook(board,Color.WHITE));
+		placeNewPiece('d',1, new Rook(board,Color.WHITE));
+		placeNewPiece('e',1, new King(board,Color.WHITE));
+		
+		placeNewPiece('b',8, new Rook(board,Color.BLACK));
+		placeNewPiece('a',8, new King(board,Color.BLACK));
+		
+		
+		/*
 		//rooks
 		placeNewPiece('a',1, new Rook(board,Color.WHITE));
 		placeNewPiece('h',1, new Rook(board,Color.WHITE));
@@ -203,7 +253,7 @@ public class ChessMatch {
 		//kings
 		placeNewPiece('e',1, new King(board,Color.WHITE));
 		placeNewPiece('e',8, new King(board,Color.BLACK));
-		
+		*/
 		//pawns
 //		for(int i=0; i<board.getColumns();i++) {
 //			
