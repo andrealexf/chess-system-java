@@ -10,6 +10,7 @@ import boardgame.Position;
 import chess.pieces.Bishop;
 import chess.pieces.King;
 import chess.pieces.Knight;
+import chess.pieces.Pawn;
 import chess.pieces.Queen;
 import chess.pieces.Rook;
 
@@ -259,10 +260,10 @@ public class ChessMatch {
 		placeNewPiece('e',8, new King(board,Color.BLACK));
 		
 		//pawns
-//		for(int i=0; i<board.getColumns();i++) {
-//			
-//			board.placePiece(new Pawn(board,Color.WHITE), new Position(3,i));
-//			board.placePiece(new Pawn(board,Color.BLACK), new Position(1,i));
-//		}
+		for(int i=0; i<board.getColumns();i++) {
+			
+			board.placePiece(new Pawn(board,Color.WHITE), new Position(6,i));
+			board.placePiece(new Pawn(board,Color.BLACK), new Position(1,i));
+		}
 	}
 }
